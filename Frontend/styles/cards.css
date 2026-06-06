@@ -1,0 +1,91 @@
+.card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 26px;
+    margin-bottom: 24px;
+}
+
+.card-header {
+    margin-bottom: 24px;
+}
+
+.card-header h2 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.card-header p {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 26px;
+    margin-bottom: 24px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.preview-box {
+    margin-top: 20px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.preview-box strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.preview-box p {
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.catalog-controls {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+
+}
+
+.orders-table {
+    overflow-x: auto;
+    margin-top: 16px;
+}
+
+table {
+    width: 100%; 
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+thead {
+    background-color: #f9fafb;
+}
+
+th {
+    padding: 14px 12px; 
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600;
+    color: #374151;
+}

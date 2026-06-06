@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Business Setup</title>
+
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/cards.css">
+    <link rel="stylesheet" href="../styles/forms.css">
+</head>
+
+<body>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">Sales Agent Admin</h2>
+            <nav>
+                <a href="business.html" class="nav-item active">
+                    Business Setup
+                </a>
+                <a href="catalog.html" class="nav-item">
+                    Catalog
+                </a>
+                <a href="policies.html" class="nav-item">
+                    Policies
+                </a>
+                <a href="orders.html" class="nav-item">
+                    Orders
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                MVP Phase 1 <br>
+                AI Sales Agent
+            </div>
+
+        </aside>
+
+        <main class="main">
+            <div class="page-header">
+                <h1>Business Setup</h1>
+                <p>
+                    Configure your business profile and AI Sales settings
+                </p>
+            </div>
+
+            <!-- Business Card -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>Business Configuration</h3>
+                    <p>Setup your store information and brand tone</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input type="text" id="businessName" placeholder="Enter business name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="businessEmail">Business Email</label>
+                        <input 
+                              type="email"
+                              id="businessEmail"
+                              name="businessEmail"
+                              placeholder="business@example.com"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="businessPhone">Business Phone</label>
+                        <input 
+                              type="tel"
+                              id="businessPhone"
+                              name="businessPhone"
+                              placeholder="+91 9796******"
+                              >
+                    </div>
+                    <div class="form-group">
+                        <label>Currency</label>
+                        <input type="text" value="INR" disabled />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="brandVoice">Brand Voice</label>
+                    <textarea 
+                             id="brandVoice" 
+                             placeholder="Friendly, premium, professional...">
+                    </textarea>
+                    <small>
+                        Helps the AI communicate in your business tone
+                    </small>
+                </div>
+
+                <div class="actions">
+                    <button id="saveBusinessBtn" class="btn-primary">
+                        Save Configuration
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Catalog Card -->
+            <section class="card">
+                <div class="card-header">
+                    <h3>Product Catalog</h3>
+                    <p>Upload your product catalog in CSV or JSON format</p>
+                </div>
+                <div class="upload-actions">
+                    <button id="uploadCatalogBtn" class="btn-primary">
+                        Upload Catalog
+                    </button>
+                    <input type="file" id="catalogFile" accept=".json" hidden />
+                    <button class="btn-secondary">Download CSV Template</button>
+                    <button class="btn-secondary">Download JSON Template</button>
+                </div>
+
+                <div class="info-box">
+                    <strong>Required Fields:</strong>
+                    <p>name, price, stock</p>
+                    <strong>Optional Fields:</strong>
+                    <p>tags(semicolon-separated), inventory_qty</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/app.js"></script>
+    <script src="../js/business.js"></script>
+</body>
+
+</html>
