@@ -9,6 +9,9 @@ import models
 from api.products import router as products_router
 from api.business import router as business_router
 from api.policy import router as policies_router
+from api.customers import router as customers_router
+from api.orders import router as orders_router
+
 #Create tables
 Base.metadata.create_all(bind=engine)
 
@@ -22,6 +25,9 @@ app = FastAPI(
 app.include_router(products_router)
 app.include_router(business_router)
 app.include_router(policies_router)
+app.include_router(customers_router)
+app.include_router(orders_router)
+
 
 @app.get("/")
 def home():
