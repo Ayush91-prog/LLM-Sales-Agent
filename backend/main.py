@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine
 from database.base import Base
 
@@ -22,6 +22,16 @@ app = FastAPI(
     description="Backend API for AI Sales Agent",
     version="1.0.0"
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 app.include_router(products_router)
 app.include_router(business_router)
 app.include_router(policies_router)

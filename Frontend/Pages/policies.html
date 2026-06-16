@@ -43,13 +43,21 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
+                        <label>Business ID</label>
+                        <input
+                             id="businessId"
+                             type="number"
+                             placeholder="Enter Business ID"
+                        />
+                    </div>
+                    <div class="form-group">
                         <label>Maximum Discount(%)</label>
-                        <input type="number" placeholder="Enter the amount of discount which you can offer" />
+                        <input id="maxDiscount" type="number" placeholder="Enter the amount of discount which you can offer" />
                         <small>Agent cannot offer discounts higher than this</small>
                     </div>
                     <div class="form-group">
                         <label>Minimum order value for discount(₹)</label>
-                        <input type="number" placeholder="Enter the Minimum order amount for discount" />
+                        <input id="minOrderValue" type="number" placeholder="Enter the Minimum order amount for discount" />
                         <small>
                             IN INR
                         </small>
@@ -60,31 +68,31 @@
                     <p>Select which reasons the agent can use to justify discounts</p>
                     <div class="checkbox-grid">
                         <label class="checkbox-item">
-                            <input type="checkbox" />
+                            <input id="allowBulkPurchase" type="checkbox" />
                             <span>
                                 Bulk Purchase
                             </span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox" />
+                            <input id="allowFirstTimeCustomer" type="checkbox" />
                             <span>
                                 First time Customer
                             </span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox">
+                            <input id="allowSeasonalSale" type="checkbox">
                             <span>Seasonal Sale</span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox" />
+                            <input id="allowLoyaltyReward" type="checkbox" />
                             <span>Loyalty Reward</span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox" />
+                            <input id="allowPriceMatch" type="checkbox" />
                             <span>Price Match</span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox" />
+                            <input id="allowCustomReason" type="checkbox" />
                             <span>Other(Custom)</span>
                         </label>
                     </div>
@@ -99,11 +107,11 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Free Shipping Over(₹)</label>
-                        <input type="number" placeholder="Orders above this amount gets free shipping" />
+                        <input id="freeShippingOver" type="number" placeholder="Orders above this amount gets free shipping" />
                     </div>
                     <div class="form-group">
                         <label>Flat shipping fee</label>
-                        <input type="number" placeholder="Enter fee for shipping" />
+                        <input id="flatShippingFee" type="number" placeholder="Enter fee for shipping" />
                     </div>
                 </div>
                 <div class="preview-box">
@@ -127,13 +135,13 @@
                     <label>
                         Return Window(Days)
                     </label>
-                    <input type="number" placeholder="Customers can return items within this period" />
+                    <input id="returnWindowDays" type="number" placeholder="Customers can return items within this period" />
                 </div>
                 <div class="form-group">
                     <label>
                         Non-Refundable Categories
                     </label>
-                    <input type="text" placeholder="e.g. personal_care, food" />
+                    <input id="nonRefundableCategories" type="text" placeholder="e.g. personal_care, food" />
                     <small>
                         Comma separated categories
                     </small>

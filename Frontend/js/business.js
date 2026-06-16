@@ -24,17 +24,34 @@ if (saveButton) {
             return;
         }
         const businessData={
-            businessName,
-            businessEmail,
-            businessPhone,
-            brandVoice
+            name:businessName,
+            email:businessEmail,
+            phone:businessPhone,
+            currency:"INR",
+            brand_voice:brandVoice
         };
-        localStorage.setItem(
-            "businessData",
-            JSON.stringify(businessData)
-        );
-        alert("Business Information Saved");
-        console.log(businessData);
+        
+        fetch("http://127.0.0.1:8000/business/",{
+            method:"Post",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(businessData)
+        })
+        .then(response => {
+            if(!response.ok){
+                throw new Error("Failed to save business")
+            }
+            return response.json();
+        })
+        .then(data =>{
+            console.log("Business Created:",data);
+            alert("Business saved successfully");
+        })
+        .catch(error =>{
+            console.error(error);
+            alert("Error saving business");
+        });
     }
     );
 }

@@ -17,12 +17,12 @@ class Customer(Base):
         nullable=False
     )
 
-    name: Mapped[int] = mapped_column(
+    name: Mapped[str] = mapped_column(
         String,
         nullable=False
     )
 
-    email: Mapped[int] = mapped_column(
+    email: Mapped[str] = mapped_column(
         String,
         nullable=False
     )

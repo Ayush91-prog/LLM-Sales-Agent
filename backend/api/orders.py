@@ -9,7 +9,8 @@ from models.customer import Customer
 
 from schemas.order import(
     OrderCreate,
-    OrderResponse
+    OrderResponse,
+    OrderStatusUpdate
 )
 
 router=APIRouter(
@@ -53,12 +54,26 @@ def create_order(
     db.commit()
     db.refresh(new_order)
 
+    return new_order
+
 @router.get("/", response_model=list[OrderResponse])
 def get_orders(
     db: Session = Depends(get_db)
 ):
-    return db.query(Order).all()
+    orders = db.query(Order).all()
+    result = []
 
+    for order in orders:
+        result.append({
+            "id": order.id,
+            "business_id": order.business_id,
+            "customer_id": order.customer_id,
+            "customer_name": order.customer.name,
+            "total_amount": order.total_amount,
+            "status": order.status,
+            "created_at": order.created_at
+        })
+    return result   
 
 @router.get("/{order_id}", response_model=OrderResponse)
 def get_order(

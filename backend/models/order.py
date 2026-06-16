@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer,Float, String, ForeignKey, DateTime
 from datetime import datetime,UTC
 
@@ -28,6 +28,7 @@ class Order(Base):
         String,
         default="pending"
     )
+    customer = relationship("Customer")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC)
