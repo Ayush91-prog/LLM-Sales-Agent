@@ -94,6 +94,37 @@ def get_order(
 
     return order
 
+@router.patch("/{order_id}/status",response_model= OrderResponse)
+def update_order_status(
+    order_id:int,
+    status_data: OrderStatusUpdate,
+    db: Session = Depends(get_db)
+):
+    order = (
+        db.query(Order)
+        .filter(Order.id == order_id)
+        .first()
+    )
+
+    if order is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Order with ID {order_id} not found"
+        )
+    
+    order.status = status_data.status
+    db.commit()
+    db.refresh(order)
+
+    return{
+        "id":order.id,
+        "business_id":order.business_id,
+        "customer_id": order.customer_id,
+        "customer_name": order.customer.name,
+        "total_amount": order.total_amount,
+        "status": order.status,
+        "created_at": order.created_at
+    }
 
 @router.delete("/{order_id}")
 def delete_order(

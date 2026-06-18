@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine
 from database.base import Base
+from api import ai
 
 import models
 
@@ -11,6 +12,7 @@ from api.business import router as business_router
 from api.policy import router as policies_router
 from api.customers import router as customers_router
 from api.orders import router as orders_router
+from api.quotes import router as quote_router
 
 #Create tables
 Base.metadata.create_all(bind=engine)
@@ -31,13 +33,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+app.include_router(ai.router)
 app.include_router(products_router)
 app.include_router(business_router)
 app.include_router(policies_router)
 app.include_router(customers_router)
 app.include_router(orders_router)
-
+app.include_router(quote_router)
 
 @app.get("/")
 def home():
