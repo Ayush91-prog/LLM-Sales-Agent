@@ -13,6 +13,8 @@ from api.policy import router as policies_router
 from api.customers import router as customers_router
 from api.orders import router as orders_router
 from api.quotes import router as quote_router
+from api.discounts import router as discount_router
+from api.checkout import router as checkout_router
 
 #Create tables
 Base.metadata.create_all(bind=engine)
@@ -40,6 +42,8 @@ app.include_router(policies_router)
 app.include_router(customers_router)
 app.include_router(orders_router)
 app.include_router(quote_router)
+app.include_router(discount_router)
+app.include_router(checkout_router)
 
 @app.get("/")
 def home():

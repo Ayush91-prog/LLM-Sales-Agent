@@ -18,9 +18,10 @@ def generate_quote(
         estimated_total = (
             product.price+shipping_fee
         )
+    
 
-        return {
-            "product_name": product.name,
+    return {
+        "product_name": product.name,
         "price": product.price,
         "shipping_fee": shipping_fee,
         "discount_available": discount_available,
@@ -30,4 +31,4 @@ def generate_quote(
             else None
         ),
         "estimated_total": estimated_total
-        }
+    }
