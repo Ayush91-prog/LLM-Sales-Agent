@@ -1,13 +1,18 @@
 from sqlalchemy.orm import Session
 from models.customer import Customer
 
-def search_customer(db:Session, query:str):
+def find_customer_in_message(db:Session, query:str):
     customers = db.query(Customer).all()
 
     query_lower = query.lower()
 
+    matches = []
     for customer in customers:
-        if customer.name.lower() in query_lower:
-            return customer
+        customer_name = customer.name.lower()
+        if (
+            customer_name in query_lower
+            or query_lower in customer_name
+        ):
+            matches.append(customer)
         
-    return None
+    return matches

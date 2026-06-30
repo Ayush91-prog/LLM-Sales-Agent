@@ -31,7 +31,7 @@ if (saveButton) {
             brand_voice:brandVoice
         };
         
-        fetch("http://127.0.0.1:8000/business/",{
+        fetch(`${API_BASE_URL}/business/`,{
             method:"Post",
             headers:{
                 "Content-Type":"application/json"

@@ -1,19 +1,30 @@
 from strands import Agent
 from strands.models.gemini import GeminiModel
-from dotenv import load_dotenv
 from database.session import SessionLocal
 from services.product_service import (get_all_products, search_products)
 from services.policy_service import get_policy
-from services.customer_service import search_customer
+from services.customer_service import find_customer_in_message
 from services.order_service import get_customer_orders
-load_dotenv()
+from services.ai_tools import (quote_tool,discount_tool,checkout_tool)
+from services.recommendation_service import recommend_products
+
+import os
+if not os.getenv("GOOGLE_API_KEY"):
+    raise RuntimeError(
+        "GOOGLE_API_KEY environment variable is not configured."
+    )
 
 model = GeminiModel(
     model_id="gemini-2.5-flash"
 )
 
 agent = Agent(
-    model=model
+    model=model,
+    tools=[
+        quote_tool,
+        discount_tool,
+        checkout_tool
+    ]
 )
 
 def chat(message:str):
@@ -25,8 +36,14 @@ def chat(message:str):
             message
         )
 
+        recommendations = []
         if products:
             context = products
+
+            recommendations = recommend_products(
+                db,
+                products[0]
+            )
         else:
             context = get_all_products(db)
 
@@ -38,7 +55,18 @@ def chat(message:str):
             ]
         )
 
+        recommendation_text = "\n".join(
+            [
+                f"{p.name} - ₹{p.price}"
+                for p in recommendations
+            ]
+        )
+
         policy = get_policy(db)
+        if not policy:
+            return "No business policy configured"
+
+
         policy_text =f"""
             Maximum Discount:{policy.max_discount_percent}%
             Minimum Order Value For Discount:{policy.min_order_value_for_discount}
@@ -53,9 +81,20 @@ def chat(message:str):
             Non Refundable Categories:{policy.non_refundable_categories}
             """
         
-        customer = search_customer(db,message)
-        if customer:
+        customers = find_customer_in_message(db,message)
+        if customers:
+              customer =customers[0]
               orders = get_customer_orders(db,customer.id)
+
+              orders_text = "\n".join(
+                  [
+                      f"Order #{order.id} - ₹{order.total_amount} - {order.status}"
+                      for order in orders
+                  ]
+              )
+              if not orders_text:
+                  orders_text = "No previous orders"
+
               customer_text = f"""
                                   Customer Name: {customer.name}
                                   Email: {customer.email}
@@ -65,19 +104,27 @@ def chat(message:str):
                             """
         else:
             customer_text = "No matching customer found"
+            orders_text = "No purchase history available"
 
         prompt = f"""
                     Available Products:
 
                     {product_text}
 
-                    Business Polcies:
+                    Recommended Products:
+
+                    {recommendation_text}
+
+                    Business Policies:
 
                     {policy_text}
 
                     Customer Information:
 
                     {customer_text}
+
+                    Past Purchase History:
+                    {orders_text}
 
                     Customer Question:
 
@@ -88,12 +135,19 @@ def chat(message:str):
                     Your goals are:
                     1. Answer customer questions accurately.
                     2. Recommend relevant products when appropriate.
-                    3. Suggest 1-2 related produts when they may benefit the customer.
+                    3. Suggest 1-2 related products when they may benefit the customer.
                     4. Suggest a premium alternative when it provides additional value.
                     5. Mention discounts, loyalty rewards, and free shipping when applicable.
                     6. Never invent products, prices, stock levels, customers, orders, or policies.
                     7. Keep recommendations concise and helpful.
                     8. Focus on helping the customer make a purchase decision.
+                    9. Suggest a higher-priced alternative when appropriate.
+                    10. Suggest complementary products when relevant.
+
+                    If the user asks for:
+                    - a quote, use the quote tool
+                    - a discount calculation, use the discount tool
+                    - order creation or checkout, use the checkout tool
 
                     Use the provided business data to answer
                 """

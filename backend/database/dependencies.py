@@ -1,4 +1,3 @@
-# FastApi standard database dependency
 from .session import SessionLocal
 
 def get_db():

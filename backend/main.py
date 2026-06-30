@@ -1,11 +1,14 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine
 from database.base import Base
 from api import ai
 
 import models
-
 
 from api.products import router as products_router
 from api.business import router as business_router
@@ -15,6 +18,8 @@ from api.orders import router as orders_router
 from api.quotes import router as quote_router
 from api.discounts import router as discount_router
 from api.checkout import router as checkout_router
+from api.analytics import router as analytics_router
+
 
 #Create tables
 Base.metadata.create_all(bind=engine)
@@ -44,6 +49,7 @@ app.include_router(orders_router)
 app.include_router(quote_router)
 app.include_router(discount_router)
 app.include_router(checkout_router)
+app.include_router(analytics_router)
 
 @app.get("/")
 def home():

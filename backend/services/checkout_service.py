@@ -16,6 +16,7 @@ def create_checkout_order(
     order = Order(
         business_id = product.business_id,
         customer_id = customer_id,
+        product_id = product.id,
         total_amount=pricing["final_price"],
         status = "pending"
     )

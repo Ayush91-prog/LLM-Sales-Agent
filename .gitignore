@@ -1,4 +1,13 @@
 .env
-backend/__pycache__/
-*.pyc 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
 backend/venv/
+.chainlit/
+.files/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -12,13 +12,18 @@ def search_products(
         db:Session,
         query:str
 ):
-    return (
-        db.query(Product)
-        .filter(
-            Product.name.ilike(f"%{query}%")
-        )
-        .all()
-    )
+    products = db.query(Product).all()
+    query_lower = query.lower()
+    matches = []
+    for product in products:
+        product_name = product.name.lower()
+        if (
+            product_name in query_lower
+            or query_lower in product_name
+        ):
+            matches.append(product)
+    return matches
+        
 
 def products_to_text(products):
     return "\n".join(

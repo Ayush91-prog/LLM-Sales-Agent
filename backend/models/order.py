@@ -20,6 +20,10 @@ class Order(Base):
         ForeignKey("customers.id"),
         nullable=False
     )
+    product_id:Mapped[int] = mapped_column(
+        ForeignKey("products.id"),
+        nullable=False
+    )
     total_amount:Mapped[float] = mapped_column(
         Float,
         nullable=False
@@ -29,6 +33,8 @@ class Order(Base):
         default="pending"
     )
     customer = relationship("Customer")
+    product = relationship("Product")
+    
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC)

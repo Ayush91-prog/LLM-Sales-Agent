@@ -32,6 +32,9 @@
                 <a href="orders.html" class="nav-item">
                     Orders
                 </a>
+                <a href="analytics.html" class="nav-item">
+                    Analytics
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -62,21 +65,11 @@
                     </div>
                     <div class="form-group">
                         <label for="businessEmail">Business Email</label>
-                        <input 
-                              type="email"
-                              id="businessEmail"
-                              name="businessEmail"
-                              placeholder="business@example.com"
-                        >
+                        <input type="email" id="businessEmail" name="businessEmail" placeholder="business@example.com">
                     </div>
                     <div class="form-group">
                         <label for="businessPhone">Business Phone</label>
-                        <input 
-                              type="tel"
-                              id="businessPhone"
-                              name="businessPhone"
-                              placeholder="+91 9796******"
-                              >
+                        <input type="tel" id="businessPhone" name="businessPhone" placeholder="+91 9796******">
                     </div>
                     <div class="form-group">
                         <label>Currency</label>
@@ -85,9 +78,7 @@
                 </div>
                 <div class="form-group">
                     <label for="brandVoice">Brand Voice</label>
-                    <textarea 
-                             id="brandVoice" 
-                             placeholder="Friendly, premium, professional...">
+                    <textarea id="brandVoice" placeholder="Friendly, premium, professional...">
                     </textarea>
                     <small>
                         Helps the AI communicate in your business tone
@@ -113,8 +104,12 @@
                         Upload Catalog
                     </button>
                     <input type="file" id="catalogFile" accept=".json" hidden />
-                    <button class="btn-secondary">Download CSV Template</button>
-                    <button class="btn-secondary">Download JSON Template</button>
+                    <a href="../templates/product_template.csv" download class="btn-secondary">
+                        Download CSV Template
+                    </a>
+                    <a href="../templates/product_template.json" download class="btn-secondary">
+                        Download JSON Template
+                    </a>
                 </div>
 
                 <div class="info-box">
@@ -126,6 +121,7 @@
             </section>
         </main>
     </div>
+    <script src="js/config.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/business.js"></script>
 </body>

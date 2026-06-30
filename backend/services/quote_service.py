@@ -3,6 +3,9 @@ def generate_quote(
         policy
 ):
     shipping_fee = 0
+    discount_available = False
+    estimated_total= product.price
+
     if(
         policy.free_shipping_over is not None
         and product.price < policy.free_shipping_over
@@ -10,14 +13,11 @@ def generate_quote(
         shipping_fee = (
             policy.flat_shipping_fee or 0
         )
+    if policy.max_discount_percent is not None:
+        discount_available = True
 
-        discount_available = (
-            policy.max_discount_percent is not None
-        )
 
-        estimated_total = (
-            product.price+shipping_fee
-        )
+    estimated_total = product.price+shipping_fee
     
 
     return {

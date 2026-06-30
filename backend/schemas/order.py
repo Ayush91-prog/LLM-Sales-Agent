@@ -13,6 +13,7 @@ class OrderStatus(str,Enum):
 class OrderCreate(BaseModel):
     business_id:int
     customer_id:int
+    product_id:int
     total_amount:float
 
 class OrderStatusUpdate(BaseModel):

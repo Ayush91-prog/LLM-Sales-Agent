@@ -1,0 +1,22 @@
+[
+    {
+        "name": "iPhone 15",
+        "price": 80000,
+        "stock": 20,
+        "tags": [
+            "mobile",
+            "apple"
+        ],
+        "inventory_qty": 20
+    },
+    {
+        "name": "Samsung S24",
+        "price": 70000,
+        "stock": 15,
+        "tags": [
+            "mobile",
+            "samsung"
+        ],
+        "inventory_qty": 15
+    }
+]

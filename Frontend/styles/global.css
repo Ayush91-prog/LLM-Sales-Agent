@@ -50,3 +50,17 @@ select{
     color:#6b7280;
     font-size:14px;
 }
+.btn-secondary{
+    display:inline-block;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#f3f4f6;
+    color:#111827;
+    font-weight:bold;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.btn-secondary:hover{
+    background:#e5e7eb;
+}

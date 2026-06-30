@@ -17,5 +17,6 @@ def chat_with_ai(request:ChatRequest):
 
     response = chat(request.message)
     return ChatResponse(
+        success=True,
         response=response
     )

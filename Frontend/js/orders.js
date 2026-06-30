@@ -5,7 +5,7 @@ const statValues = document.querySelectorAll(".stat-value");
 async function loadOrders() {
     try {
         const response = await fetch(
-            "http://127.0.0.1:8000/orders/"
+            `${API_BASE_URL}/orders/`
         );
         const orders = await response.json();
         renderOrders(orders);
