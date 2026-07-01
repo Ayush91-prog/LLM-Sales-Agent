@@ -1,6 +1,9 @@
 import chainlit as cl
 import httpx
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 FASTAPI_URL = os.getenv(
     "BACKEND_URL",
