@@ -37,8 +37,16 @@ def chat(message:str):
         )
 
         recommendations = []
+        business_id=None
+        policy = None
+
         if products:
-            context = products
+            business_id = products[0].business_id
+
+            context = [
+                p for p in products
+                if p.business_id == business_id
+            ]
 
             recommendations = recommend_products(
                 db,
@@ -62,12 +70,13 @@ def chat(message:str):
             ]
         )
 
-        policy = get_policy(db)
-        if not policy:
-            return "No business policy configured"
+        if business_id is not None:
+            policy = get_policy(db,business_id)
+        else:
+            policy = None
 
-
-        policy_text =f"""
+        if policy:
+            policy_text =f"""
             Maximum Discount:{policy.max_discount_percent}%
             Minimum Order Value For Discount:{policy.min_order_value_for_discount}
             Bulk Purchase Allowed:{policy.allow_bulk_purchase}
@@ -80,6 +89,9 @@ def chat(message:str):
             Return Window:{policy.return_window_days} days
             Non Refundable Categories:{policy.non_refundable_categories}
             """
+        else:
+            policy_text = "No business policy available"
+
         
         customers = find_customer_in_message(db,message)
         if customers:
