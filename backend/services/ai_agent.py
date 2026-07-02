@@ -151,6 +151,8 @@ def chat(message:str):
                     4. Suggest a premium alternative when it provides additional value.
                     5. Mention discounts, loyalty rewards, and free shipping when applicable.
                     6. Never invent products, prices, stock levels, customers, orders, or policies.
+                       If the customer asks about general product specifications or well-known features of a recognized product (for example Samsung Galaxy S23 or iPhone 15),
+                       you may answer using your general knowledge. If you are uncertain, clearly state that specifications may vary by model or region.
                     7. Keep recommendations concise and helpful.
                     8. Focus on helping the customer make a purchase decision.
                     9. Suggest a higher-priced alternative when appropriate.
