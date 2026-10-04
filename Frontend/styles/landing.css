@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px;
+}
+
+.landing-container {
+    width: 100%;
+    max-width: 1100px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.subtitle {
+    max-width: 750px;
+    margin: auto;
+    margin-bottom: 70px;
+    color: #555;
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 340px;
+    background: #ffffff;
+    border: 2px solid #111;
+    border-radius: 16px;
+    padding: 40px 30px;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    background: #111;
+    color: white;
+    transform: translateY(-8px);
+}
+
+.card:hover p {
+    color: #dddddd;
+}
+
+.card:hover a {
+    background: white;
+    color: black;
+}
+
+.card h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.card p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 35px;
+    transition: .3s;
+}
+
+.card a {
+    display: inline-block;
+    text-decoration: none;
+    background: #111;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.card a:hover {
+    transform: scale(1.05);
+}
+
+.github {
+    margin-top: 60px;
+}
+
+.github a {
+    color: #111;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid #111;
+    padding-bottom: 3px;
+}
+
+.github a:hover {
+    opacity: .7;
+}
+
+@media (max-width:768px) {
+
+    h1 {
+        font-size: 2.6rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 380px;
+    }
+}

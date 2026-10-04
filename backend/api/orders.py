@@ -7,6 +7,9 @@ from models.order import Order
 from models.business import Business
 from models.customer import Customer
 from models.product import Product
+from models.admin import Admin
+from services.auth_service import get_current_admin
+
 
 from schemas.order import(
     OrderCreate,
@@ -79,9 +82,10 @@ def create_order(
 
 @router.get("/", response_model=list[OrderResponse])
 def get_orders(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin:Admin=Depends(get_current_admin)
 ):
-    orders = db.query(Order).all()
+    orders = db.query(Order).filter(Order.business_id==current_admin.business_id).all()
     result = []
 
     for order in orders:
@@ -90,7 +94,7 @@ def get_orders(
             "business_id": order.business_id,
             "customer_id": order.customer_id,
             "product_id": order.product_id,
-            "customer_name": order.customer.name,
+            "customer_name": order.customer.name if order.customer else "Guest",
             "total_amount": order.total_amount,
             "status": order.status,
             "created_at": order.created_at

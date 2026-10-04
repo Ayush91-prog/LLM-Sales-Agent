@@ -58,8 +58,8 @@ def chat(message:str):
 
         product_text = "\n".join(
             [
-                f"{p.name} - ₹{p.price} - Stock: {p.stock}"
-                for p in context
+                f"Product:{p.name} | Price: ₹{p.price} | Stock: {p.stock} | Seller:{p.business.name}"
+                for p in all_matching_products
             ]
         )
 

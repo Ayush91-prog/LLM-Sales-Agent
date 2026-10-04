@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped,mapped_column
-from sqlalchemy import Integer, String, ForeignKey
-
+from sqlalchemy import Integer, String, ForeignKey, DateTime
+from datetime import datetime
 from database.base import Base 
 
 class Customer(Base):
@@ -10,11 +10,6 @@ class Customer(Base):
         Integer,
         primary_key = True,
         index=True
-    )
-
-    business_id: Mapped[int] = mapped_column(
-        ForeignKey("businesses.id"),
-        nullable=False
     )
 
     name: Mapped[str] = mapped_column(
@@ -30,3 +25,5 @@ class Customer(Base):
         String,
         nullable=True
     )
+    hashed_password:Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
