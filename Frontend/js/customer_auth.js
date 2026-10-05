@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     registerTab.addEventListener('click',()=>{
         registerTab.classList.add('active');
         loginTab.classList.remove('active');
-        registerForm.style.display='block'
+        registerForm.style.display='block';
         loginForm.style.display='none';
     });
 

@@ -49,7 +49,7 @@ def login_admin(data:AdminLogin, db:Session = Depends(get_db)):
     ).first()
 
     if not admin or not verify_password(data.password,admin.hashed_password):
-        raise HTTPException(status_code=401,details="Invalid Admin Code / Email or Password")
+        raise HTTPException(status_code=401,detail="Invalid Admin Code / Email or Password")
 
     token = create_access_token({"sub":admin.id, "user_type":"admin" , "business_id":admin.business_id})
     return TokenResponse(access_token=token, user_type="admin")

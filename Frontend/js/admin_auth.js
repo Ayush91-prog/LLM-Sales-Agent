@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById('loginPassword').value;
 
         try {
+            console.log("Connecting to:",API_BASE_URL);
             const res = await fetch(`${API_BASE_URL}/auth/admin/login`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
@@ -36,42 +37,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem('admin_token', data.access_token);
                 window.location.href = 'index.html';
             } else {
-                alert(data.detail || 'Login failed');
+                alert(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail));
             }
         }
         catch (err) {
-            alert('Could not connect to backend server');
+            console.error("Login Error:",err);
+            alert(`Connection Error: ${err.message}`);
         }
     });
 
     // Handle Admin Register
-    registerForm.addEventListener('submit',async(e)=>{
+    registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('regName').value;
         const business_name = document.getElementById('regBusiness').value;
         const email = document.getElementById('regEmail').value;
         const password = document.getElementById('regPassword').value;
 
-        try{
-            const res = await fetch(`${API_BASE_URL}/auth/admin/register`,{
-                method:"POST",
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({name,business_name,email,password})
+        try {
+            console.log("Connecting to:",`${API_BASE_URL}/auth/admin/register`);
+            const res = await fetch(`${API_BASE_URL}/auth/admin/register`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, business_name, email, password })
             });
 
             const data = await res.json();
-            if(res.ok){
+            if (res.ok) {
                 document.getElementById('displayAdminCode').innerText = data.admin_code;
                 codeAlert.style.display = 'block';
-                localStorage.setItem('admin_token',data.access_token);
-                setTimeout(()=>{
-                    window.location.href='index.html';
-                },4000);
-            }else{
-                alert(data.detail || 'Registration failed');
+                localStorage.setItem('admin_token', data.access_token);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 4000);
+            } else {
+                alert(typeof data.detail === 'string' ? data.detail:JSON.stringify(data.detail));
             }
-        } catch(err){
-            alert('Could not connect to backend server.');
+        } catch (err) {
+            console.log("Registration Error:", err)
+            alert(`Connection Error: ${err.message}`);
         }
     });
 })
