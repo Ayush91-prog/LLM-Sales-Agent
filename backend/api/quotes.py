@@ -29,7 +29,7 @@ def create_quote(
             detail="Product not found"
         )
     product = products[0]
-    policy = get_policy(db)
+    policy = get_policy(db,product.business_id)
     quote = generate_quote(
         product,
         policy

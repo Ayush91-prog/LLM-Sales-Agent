@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from database.dependencies import get_db
 
 from models.customer import Customer
-from models.business import Business
 
 from schemas.customer import(
     CustomerCreate,CustomerResponse
@@ -20,16 +19,11 @@ def create_customer(
     customer:CustomerCreate,
     db:Session = Depends(get_db)
 ):
-    business = (
-        db.query(Business)
-        .filter(Business.id == customer.business_id)
-        .first()
-    )
-
-    if business is None:
+    existing = db.query(Customer).filter(Customer.email == customer.email).first()
+    if existing:
         raise HTTPException(
-            status_code=404,
-            detail=f"Business with ID {customer.business_id} not found"
+            status_code=400,
+            detail="Email already registered"
         )
     
     new_customer = Customer(**customer.model_dump())

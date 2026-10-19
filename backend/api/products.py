@@ -13,6 +13,37 @@ router = APIRouter(
     tags=["Products"]
 )
 
+@router.post("/bulk",response_model=list[ProductResponse])
+def bulk_create_products(
+    products_data: list[ProductCreate],
+    db:Session = Depends(get_db),
+    current_admin: Admin = Depends(get_current_admin)
+):
+    target_business_id = current_admin.business_id
+    if not target_business_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Admin is not associated with any business"
+        )
+
+    new_products = []
+    for item in products_data:
+        prod = Product(
+            business_id = target_business_id,
+            name = item.name,
+            price = item.price,
+            stock = item.stock
+        )
+        db.add(prod)
+        new_products.append(prod)
+
+    db.commit()
+    for prod in new_products:
+        db.refresh(prod)
+
+    return new_products
+
+
 # Creating product endpoint
 @router.post("/",response_model=ProductResponse)
 def create_product(
@@ -50,9 +81,14 @@ def create_product(
 # Getting All products endpoint
 @router.get("/",response_model=list[ProductResponse])
 def get_all_products(
+    business_id: int | None = None,
     db:Session = Depends(get_db)
 ):
-    return db.query(Product).all()
+    query = db.query(Product)
+    if business_id is not None:
+        query = query.filter(Product.business_id == business_id)
+    return query.all()
+
 
 
 @router.get("/my", response_model=list[ProductResponse])

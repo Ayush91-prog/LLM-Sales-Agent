@@ -7,6 +7,7 @@ def recommend_products(
     return (
         db.query(Product)
         .filter(
+            Product.business_id == current_product.business_id,
             Product.id != current_product.id
         )
         .limit(3)

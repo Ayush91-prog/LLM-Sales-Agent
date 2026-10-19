@@ -1,11 +1,10 @@
-from pydantic import BaseModel
-
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 class PolicyCreate(BaseModel):
-    business_id:int
+    business_id:Optional[int] = None
 
     max_discount_percent: float | None=None
     min_order_value_for_discount:float | None=None
-
     allow_bulk_purchase: bool = False
     allow_first_time_customer: bool = False
     allow_seasonal_sale:bool = False
@@ -21,6 +20,5 @@ class PolicyCreate(BaseModel):
 
 class PolicyResponse(PolicyCreate):
     id:int
-
-    class Config:
-        from_attributes = True
+    business_id:int
+    model_config = ConfigDict(from_attributes = True)

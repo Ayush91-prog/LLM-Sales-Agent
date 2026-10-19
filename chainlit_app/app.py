@@ -1,14 +1,18 @@
-import chainlit as cl
-import httpx
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+os.environ.pop("DATABASE_URL", None)
+
+import chainlit as cl
+import httpx
+
 FASTAPI_URL = os.getenv(
     "BACKEND_URL",
-    "http://127.0.0.1:8000/ai/chat"
+    os.getenv("LOCAL_BACKEND_URL", "http://127.0.0.1:8000/ai/chat")
 )
+
  
  
 @cl.on_chat_start
@@ -17,8 +21,11 @@ async def start():
  
     await cl.Message(
         content=(
-            "Welcome to the **AI Sales Agent**!\n\n"
-            "What can I help you with today?"
+            " **Welcome to the AI Marketplace !**\n\n"
+            "I can help you discover products across all our verified sellers, "
+            "negotiate policy-approved discounts, get quotes with shipping calculations, "
+            "and place your orders instantly.\n\n"
+            "Tell me what you're looking for!"
         )
     ).send()
  
@@ -43,7 +50,7 @@ async def main(message: cl.Message):
                     "message": message.content,
                     "history": history  
                 },
-                timeout=60
+                timeout=120.0
             )
  
             if response.status_code != 200:

@@ -122,7 +122,7 @@ def get_order(
         "business_id": order.business_id,
         "customer_id": order.customer_id,
         "product_id": order.product_id,
-        "customer_name": order.customer.name,
+        "customer_name": order.customer.name if order.customer else "Guest",
         "total_amount": order.total_amount,
         "status": order.status,
         "created_at": order.created_at
@@ -155,7 +155,7 @@ def update_order_status(
         "business_id":order.business_id,
         "customer_id": order.customer_id,
         "product_id": order.product_id,
-        "customer_name": order.customer.name,
+        "customer_name": order.customer.name if order.customer else "Guest",
         "total_amount": order.total_amount,
         "status": order.status,
         "created_at": order.created_at

@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const API_URL = window.API_BASE_URL || "http://127.0.0.1:8000";
+
     const loginTab = document.getElementById('loginTab');
     const registerTab = document.getElementById('registerTab');
     const loginForm = document.getElementById('loginForm');
@@ -26,8 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById('loginPassword').value;
 
         try {
-            console.log("Connecting to:",API_BASE_URL);
-            const res = await fetch(`${API_BASE_URL}/auth/admin/login`, {
+            const res = await fetch(`${API_URL}/auth/admin/login`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ identifier, password })
@@ -35,14 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('admin_token', data.access_token);
-                window.location.href = 'index.html';
+                window.location.href = 'catalog.html';
             } else {
-                alert(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail));
+                alert(data.detail || "Login failed");
             }
         }
         catch (err) {
             console.error("Login Error:",err);
-            alert(`Connection Error: ${err.message}`);
+            alert(`Connection Error: Make sure your backend server is running on port 8000!`);
         }
     });
 
@@ -55,8 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById('regPassword').value;
 
         try {
-            console.log("Connecting to:",`${API_BASE_URL}/auth/admin/register`);
-            const res = await fetch(`${API_BASE_URL}/auth/admin/register`, {
+
+            const res = await fetch(`${API_URL}/auth/admin/register`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, business_name, email, password })
@@ -68,10 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 codeAlert.style.display = 'block';
                 localStorage.setItem('admin_token', data.access_token);
                 setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 4000);
+                    window.location.href = 'catalog.html';
+                }, 2000);
             } else {
-                alert(typeof data.detail === 'string' ? data.detail:JSON.stringify(data.detail));
+                alert(data.detail || "Registration failed");
             }
         } catch (err) {
             console.log("Registration Error:", err)

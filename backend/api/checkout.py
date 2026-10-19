@@ -32,11 +32,19 @@ def checkout_order(
     
     product = products[0]
 
-    policy = get_policy(db)
-    return create_checkout_order(
-        db=db,
-        customer_id=request.customer_id,
-        product=product,
-        policy=policy,
-        discount_percent= request.discount_percent
-    )
+    policy = get_policy(db,product.business_id)
+
+    try:
+        return create_checkout_order(
+            db=db,
+            customer_id=request.customer_id,
+            product=product,
+            policy=policy,
+            discount_percent= request.discount_percent
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    

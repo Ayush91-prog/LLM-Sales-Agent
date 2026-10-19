@@ -1,14 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class CustomerCreate(BaseModel):
-    business_id: int
-
     name: str
     email: str
     phone: str | None=None
 
 class CustomerResponse(CustomerCreate):
     id:int
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

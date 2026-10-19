@@ -12,9 +12,31 @@ const inventoryValueElement =
 const lowStockItemsElement =
     document.querySelector("#lowStockItems");
 
-
 const saveProductBtn =
     document.querySelector("#saveProductBtn");
+
+
+// Auto fetch the logged in admin's profile and pre-fill Business ID
+async function loadAdminProfile() {
+    try{
+        const response = await fetch (`${API_BASE_URL}/auth/admin/me`,
+            {
+                headers:getAuthHeaders()
+            }
+        );
+        if (response.ok) {
+            const admin = await response.json();
+            const businessIdInput = document.querySelector("#businessId");
+
+            if(businessIdInput && admin.business_id){
+                businessIdInput.value = admin.business_id;
+                businessIdInput.disabled = true;
+            }
+        }
+    }catch(e){
+        console.error("Could not fetch admin profile",e);
+    }
+}
 
 if (saveProductBtn) {
     saveProductBtn.addEventListener("click", async () => {
@@ -27,7 +49,6 @@ if (saveProductBtn) {
         const productStock =
             document.querySelector("#productStock").value;
         if (
-            !businessId ||
             !productName ||
             !productPrice ||
             !productStock
@@ -51,21 +72,21 @@ if (saveProductBtn) {
                 }
             );
             if (!response.ok) {
-                throw new Error("Failed to create product")
+                const errData = await response.json().catch(() =>({}));
+                throw new Error(errData.detail || `Server error:${response.status}`);
             }
-            const data = await response.json();
-            console.log(data);
+
             alert("Product created Successfully")
             loadProducts();
+
             // clear form
-            document.querySelector("#businessId").value = "";
             document.querySelector("#productName").value = "";
             document.querySelector("#productPrice").value = "";
             document.querySelector("#productStock").value = "";
 
         } catch (error) {
             console.error(error);
-            alert("Error Creating Product");
+            alert(`Error Creating Product: ${error.message}`);
         }
     });
 }
@@ -74,19 +95,23 @@ async function loadProducts() {
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}/products/`,
+            `${API_BASE_URL}/products/my`,
+            {
+                headers:getAuthHeaders()
+            }
         );
         if (!response.ok) {
-            throw new Error("Failed to load products");
+            throw new Error(`Failed to load products (${response.status})`);
         }
+
         const products = await response.json();
         renderProducts(products);
+
     } catch (error) {
         console.error(error);
     }
 }
 function renderProducts(products) {
-
     // Total Products
     if (totalProducts) {
         totalProducts.textContent = products.length;
@@ -120,7 +145,7 @@ function renderProducts(products) {
         productList.innerHTML = `
             <div class="empty-state">
                 <h4>No Products in Catalog</h4>
-                <p>No products found</p>
+                <p>Use the form above to add your first product.</p>
             </div>
         `;
         return;
@@ -145,11 +170,7 @@ function renderProducts(products) {
 }
 async function deleteProduct(productId) {
 
-    const confirmed = confirm(
-        "Are you sure you want to delete this product?"
-    );
-
-    if (!confirmed) {
+    if (!confirm("Are you sure you want to delete this product?")) {
         return;
     }
 
@@ -158,12 +179,14 @@ async function deleteProduct(productId) {
         const response = await fetch(
             `${API_BASE_URL}/products/${productId}`,
             {
-                method: "DELETE"
+                method: "DELETE",
+                headers: getAuthHeaders()
             }
         );
 
         if (!response.ok) {
-            throw new Error("Failed to delete product");
+           const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.detail || "Failed to delete product");
         }
 
         alert("Product deleted successfully");
@@ -174,10 +197,10 @@ async function deleteProduct(productId) {
 
         console.error(error);
 
-        alert("Error deleting product");
+        alert(`Error deleting product: $(error.message)`);
     }
 }
-document.addEventListener(
-    "DOMContentLoaded",
-    loadProducts
-);
+document.addEventListener("DOMContentLoaded",() => {
+    loadAdminProfile();
+    loadProducts();
+});

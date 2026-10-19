@@ -1,19 +1,23 @@
-# Get all products
-# Get product by name
-# Search products
-
 from sqlalchemy.orm import Session
 from models.product import Product
 
-def get_all_products(db:Session):
-    return db.query(Product).all()
+def get_all_products(db:Session,business_id:int | None=None):
+    query = db.query(Product)
+    if business_id is not None:
+        query = query.filter(Product.business_id == business_id)
+    return query.all()
 
 def search_products(
         db:Session,
-        query:str
+        query_str:str,
+        business_id:int | None=None
 ):
-    products = db.query(Product).all()
-    query_lower = query.lower()
+    query = db.query(Product)
+    if business_id is not None:
+        query = query.filter(Product.business_id == business_id)
+
+    products = query.all()
+    query_lower = query_str.lower()
     matches = []
     for product in products:
         product_name = product.name.lower()

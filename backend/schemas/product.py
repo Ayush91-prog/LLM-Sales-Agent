@@ -1,14 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 class ProductCreate(BaseModel):
-    business_id:int
-
     name:str
     price:float
     stock:int
+    business_id:Optional[int] = None
 
 class ProductResponse(ProductCreate):
     id:int
-
-    class Config:
-        from_attributes = True
+    business_id: int
+    model_config= ConfigDict(from_attributes = True)

@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String, Float,ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column , relationship
+from sqlalchemy import Integer, String, Float, ForeignKey
 
 from database.base import Base
 
@@ -15,3 +15,5 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     stock: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    business = relationship("Business")

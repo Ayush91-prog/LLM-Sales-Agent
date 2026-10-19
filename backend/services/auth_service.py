@@ -1,7 +1,7 @@
 import os 
 import jwt
 import bcrypt
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta, timezone
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -9,7 +9,11 @@ from database.dependencies import get_db
 from models.admin import Admin
 from models.customer import Customer
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY","super-secret-sales-agent-key-2026")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "JWT_SECRET_KEY environment variable is not configured"
+    )
 ALGORITHM ="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60*24 #24 HRS
 
@@ -26,8 +30,8 @@ def verify_password(plain_password:str,hashed_password:str)-> bool:
 
 def create_access_token(data:dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp":expire})
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp":expire, "sub":str(data["sub"])})
     return jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
 
 def get_current_admin(
@@ -40,15 +44,19 @@ def get_current_admin(
         if payload.get("user_type") != "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
 
-        admin_id:int = payload.get("sub")
+        sub = payload.get("sub")
+        if sub is None:
+            raise HTTPException(status_code=401,detail="Invalid token: missing subject")
+        admin_id  = int(sub)
 
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401,detail="Invalid token")
+    except jwt.PyJWTError as e:
+        print(f"JWT Verification Failed: {type(e).__name__} ({str(e)})")
+        raise HTTPException(status_code=401,detail=f"Invalid token: {type(e).__name__} ({str(e)})")
 
     admin = db.query(Admin).filter(Admin.id==admin_id).first()
 
     if not admin:
-        raise HTTPException(status_code=404,detail="admin not found")
+        raise HTTPException(status_code=404,detail="Admin account not found in database")
     return admin
 
 def get_current_customer(
@@ -62,10 +70,14 @@ def get_current_customer(
         if payload.get("user_type") != "customer":
             raise HTTPException(status_code=403,detail="Customer access required")
 
-        customer_id: int = payload.get("sub")
+        sub = payload.get("sub")
+        if sub is None:
+            raise HTTPException(status_code=403, detail="Invalid token: missing subject")
+        customer_id = int(sub)
 
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=401,detail="Invalid token")
+    except jwt.PyJWTError as e:
+        print(f"Customer JWT Verification Failed: {type(e).__name__} ({str(e)})")
+        raise HTTPException(status_code=401, detail=f"Invalid token: {type(e).__name__} ({str(e)})")
 
     customer =  db.query(Customer).filter(Customer.id==customer_id).first()
 

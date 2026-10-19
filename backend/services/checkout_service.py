@@ -8,6 +8,9 @@ def create_checkout_order(
         policy,
         discount_percent
 ):
+    if product.stock <= 0:
+        raise ValueError("Product is out of stock")
+    
     pricing = apply_discount(
         product,
         policy,
@@ -20,9 +23,12 @@ def create_checkout_order(
         total_amount=pricing["final_price"],
         status = "pending"
     )
+    product.stock -= 1
+
     db.add(order)
     db.commit()
     db.refresh(order)
+    db.refresh(product)
 
     return {
         "order_id": order.id,

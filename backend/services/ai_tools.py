@@ -1,6 +1,7 @@
 from strands import tool
 from database.session import SessionLocal
 
+from models.business import Business
 from models.order import Order
 from services.product_service import search_products, get_all_products
 from services.policy_service import get_policy
@@ -11,23 +12,25 @@ from services.quote_service import generate_quote
 from services.discount_service import apply_discount
 from services.checkout_service import create_checkout_order
 
-
 @tool
 def quote_tool(product_name: str):
     """
-    Generate a sales quote for a product.
+    Generate a sales quote for a product including shipping fees and discount caps.
+
     Args:
         product_name: Name of the product.
     """
     db = SessionLocal()
-
     try:
         products = search_products(db, product_name)
         if not products:
-            return {"error": "Product not found"}
+            return {"error": f"Product '{product_name}' not found."}
         product = products[0]
         policy = get_policy(db, product.business_id)
-        return generate_quote(product, policy)
+        quote = generate_quote(product, policy)
+        quote["seller"] = product.business.name if (hasattr(product, "business") and product.business) else f"Seller #{product.business_id}"
+        quote["business_id"] = product.business_id
+        return quote
     finally:
         db.close()
 
@@ -35,21 +38,23 @@ def quote_tool(product_name: str):
 @tool
 def discount_tool(product_name: str, discount_percent: float):
     """
-    Apply a discount to a product based on store policy.
+    Apply a discount to a product based strictly on that seller's store policy.
 
     Args:
         product_name: Name of the product.
         discount_percent: Requested discount percentage.
     """
     db = SessionLocal()
-
     try:
         products = search_products(db, product_name)
         if not products:
-            return {"error": "Product not found"}
+            return {"error": f"Product '{product_name}' not found."}
         product = products[0]
         policy = get_policy(db, product.business_id)
-        return apply_discount(product, policy, discount_percent)
+        result = apply_discount(product, policy, discount_percent)
+        result["seller"] = product.business.name if (hasattr(product, "business") and product.business) else f"Seller #{product.business_id}"
+        result["business_id"] = product.business_id
+        return result
     finally:
         db.close()
 
@@ -57,34 +62,38 @@ def discount_tool(product_name: str, discount_percent: float):
 @tool
 def checkout_tool(customer_name: str, product_name: str, discount_percent: float = 0):
     """
-    Create an order / checkout for a customer.
+    Create an order and checkout for a customer, reserving stock and applying validated discounts.
 
     Args:
         customer_name: Customer name.
         product_name: Product name.
         discount_percent: Discount percentage (optional).
     """
-
     db = SessionLocal()
     try:
         products = search_products(db, product_name)
         if not products:
-            return {"error": "Product not found"}
+            return {"error": f"Product '{product_name}' not found."}
         customers = find_customer_in_message(db, customer_name)
         if not customers:
-            return {"error": "Customer not found"}
+            return {"error": f"Customer '{customer_name}' not found. Please provide customer name."}
 
         product = products[0]
         customer = customers[0]
         policy = get_policy(db, product.business_id)
 
-        return create_checkout_order(
-            db=db,
-            customer_id=customer.id,
-            product=product,
-            policy=policy,
-            discount_percent=discount_percent,
-        )
+        try:
+            return create_checkout_order(
+                db=db,
+                customer_id=customer.id,
+                product=product,
+                policy=policy,
+                discount_percent=discount_percent,
+            )
+        except ValueError as e:
+            return {
+                "error": str(e)
+            }
     finally:
         db.close()
 
@@ -155,14 +164,22 @@ def policy_check_tool(business_id: int = 1):
     Check business policies including discount rules, free shipping thresholds, and return windows.
 
     Args:
-        business_id: ID of the business (defaults to 1).
+        business_id: ID of the business/seller.
     """
     db = SessionLocal()
     try:
         policy = get_policy(db, business_id)
+        business = db.query(Business).filter(Business.id == business_id).first()
+        seller_name = business.name if business else f"Seller #{business_id}"
         if not policy:
-            return {"message": "No active policies found for this business."}
+            return {
+                "business_id": business_id,
+                "seller": seller_name,
+                "message": "No special discount or shipping policy configured. Standard retail terms apply (0% discount cap)."
+            }
         return {
+            "business_id": business_id,
+            "seller": seller_name,
             "max_discount_percent": policy.max_discount_percent,
             "min_order_value_for_discount": policy.min_order_value_for_discount,
             "allow_bulk_purchase": policy.allow_bulk_purchase,
@@ -182,7 +199,7 @@ def policy_check_tool(business_id: int = 1):
 @tool
 def product_search_tool(query: str):
     """
-    Search product catalog by name or keyword for real-time stock and pricing.
+    Search product catalog by name or keyword for real-time stock, pricing, and seller attribution.
 
     Args:
         query: Product name or keyword to search for.
@@ -199,8 +216,10 @@ def product_search_tool(query: str):
                 "name": p.name,
                 "price": p.price,
                 "stock": p.stock,
+                "seller": p.business.name if (hasattr(p, "business") and p.business) else f"Seller #{p.business_id}",
+                "business_id": p.business_id,
             }
             for p in products
         ]
     finally:
-        db.close()
+        db.close()

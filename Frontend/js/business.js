@@ -64,18 +64,50 @@ if(uploadBtn){
     });
 }
 if(fileInput){
-    fileInput.addEventListener("change",(event)=>{
+    fileInput.addEventListener("change", async (event)=>{
         const file = event.target.files[0];
         if(!file) return;
+
         const reader = new FileReader();
-        reader.onload =(e) => {
+        reader.onload = async (e) => {
             try{
-                const products= JSON.parse(e.target.result);
-                localStorage.setItem("products",JSON.stringify(products));
-                alert("Catalog Uploaded Successfully");
+                const rawProducts= JSON.parse(e.target.result);
+                if (!Array.isArray(rawProducts)) {
+                    alert("JSON file must contain an array of products: [{name, price, stock}]");
+                    return;
+                }
+
+                const cleanedProducts = rawProducts.map(p => ({
+                    name:p.name,
+                    price: Number(p.price),
+                    stock: Number(p.stock !== undefined ? p.stock : (p.inventory_qty || 0 ))
+                }));
+
+                const token = localStorage.getItem("admin_token");
+                const res = await fetch(`${API_BASE_URL}/products/bulk`, {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":token ? `Bearer ${token}`: ""
+                    },
+                    body: JSON.stringify(cleanedProducts)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    const errMsg = Array.isArray(err.detail)
+                        ? err.detail.map(d => `${d.loc ? d.loc.slice(-1) : 'field'}: ${d.msg}`).join('\n')
+                        : (err.detail || `Upload failed with status ${res.status}`);
+                    throw new Error(errMsg);
+                }
+                const saveProducts = await res.json();
+
+                alert(`Successfully uploaded ${saveProducts.length} products into your store catalog!`);
+                fileInput.value = "";
             }
-            catch{
-                alert("Invalid JSON File")
+            catch(err){
+                console.error(err);
+                alert(`Error uploading catalog: ${err.message}`);
             }
         };
         reader.readAsText(file);

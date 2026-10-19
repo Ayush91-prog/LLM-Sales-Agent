@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from schemas.ai import ChatRequest,ChatResponse
 from services.ai_agent import chat
 
@@ -15,7 +14,11 @@ router = APIRouter(
 
 def chat_with_ai(request:ChatRequest):
 
-    response = chat(request.message)
+    response = chat(
+        message=request.message,
+        business_id=request.business_id,
+        customer_id=request.customer_id
+    )
     return ChatResponse(
         success=True,
         response=response

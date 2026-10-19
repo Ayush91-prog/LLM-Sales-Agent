@@ -30,7 +30,7 @@ def apply_discount_api(
         )
     
     product = products[0]
-    policy = get_policy(db)
+    policy = get_policy(db,product.business_id)
     return apply_discount(
         product,
         policy,

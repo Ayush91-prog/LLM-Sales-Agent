@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from enum import Enum
 
@@ -24,6 +24,4 @@ class OrderResponse(OrderCreate):
     customer_name:str
     status:OrderStatus
     created_at:datetime
-
-    class Config:
-        from_attributes=True
+    model_config = ConfigDict(from_attributes=True)

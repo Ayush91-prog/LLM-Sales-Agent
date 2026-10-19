@@ -5,8 +5,15 @@ const statValues = document.querySelectorAll(".stat-value");
 async function loadOrders() {
     try {
         const response = await fetch(
-            `${API_BASE_URL}/orders/`
+            `${API_BASE_URL}/orders/`,
+            {
+                headers:getAuthHeaders()
+            }
         );
+        if(!response.ok){
+            throw new Error(`Failed to load orders: ${response.statusText}`);
+        }
+
         const orders = await response.json();
         renderOrders(orders);
     } catch (error) {
