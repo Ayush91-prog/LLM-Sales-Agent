@@ -42,7 +42,7 @@ agent = Agent(
     ]
 )
 
-def chat(message:str, business_id: int | None=None, customer_id:int | None=None):
+def chat(message:str, business_id: int | None=None, customer_id:int | None=None, history: list | None = None):
     db = SessionLocal()
 
     try:
@@ -127,20 +127,22 @@ def chat(message:str, business_id: int | None=None, customer_id:int | None=None)
         if customer:
               orders = get_customer_orders(db, customer.id)
               orders_lines = [
-                f"Order #{order.id} - ₹{order.total_amount:,.2f} - Status: {order.status}"
+                f"Order #{order.id} - ₹{order.total_amount:,.2f} - Status: {order.status} (Ship To: {order.shipping_address or customer.address or 'Address on file'})"
                 for order in orders
                ]
               orders_text = "\n".join(orders_lines) if orders_lines else "No previous orders on record."
               total_spend = sum(order.total_amount for order in orders)
               customer_text = (
-                      f"Customer Name: {customer.name}\n"
-                      f"Email: {customer.email}\n"
-                      f"Phone: {customer.phone}\n"
-                      f"Total Past Orders: {len(orders)}\n"
-                      f"Total Lifetime Spend: ₹{total_spend:,.2f}"
+                  f"Customer ID: {customer.id}\n"
+                  f"Customer Name: {customer.name}\n"
+                  f"Email: {customer.email}\n"
+                  f"Phone: {customer.phone}\n"
+                  f"Saved Delivery Address: {customer.address or 'Registered address on file'}\n"        
+                  f"Total Past Orders: {len(orders)}\n"
+                  f"Total Lifetime Spend: ₹{total_spend:,.2f}"
                 ) 
         else:
-            customer_text = "Guest customer (Not logged in)"
+            customer_text = "Guest customer (Not logged in / Session expired)"
             orders_text = "No purchase history available"
 
         if business_id and business_id in business_map:
@@ -192,10 +194,15 @@ def chat(message:str, business_id: int | None=None, customer_id:int | None=None)
                     - For a price breakdown or quote: Call `quote_tool(product_name=...)`.
                     - For negotiating/applying discounts: Call `discount_tool(product_name=..., discount_percent=...)`.
                     - To checkout/place an order: Call `checkout_tool(customer_name=..., product_name=..., discount_percent=...)`.
+                    * CRITICAL: If a Customer Profile is present above (customer is logged in), use that customer's name directly. NEVER ask them to provide their name!
                     - To check existing order status: Call `order_tracking_tool(order_id=...)`.
                     - To inspect a customer's past orders: Call `customer_history_tool(customer_name=...)`.
                     - To search the catalog dynamically: Call `product_search_tool(query=...)`.
                     - To verify policy rules: Call `policy_check_tool(business_id=...)`.
+                    - GUEST RESTRICTION: If the customer profile is "Guest customer" (not logged in), DO NOT allow checkout! Politely inform them: "To place an order, you must first log in to your registered customer account."
+                    - AUTOMATIC ADDRESS BINDING: For logged-in customers, call checkout_tool(customer_name=..., product_name=..., discount_percent=...).
+                    - In the checkout confirmation, state that the order will be shipped to their Saved Delivery Address.
+                    - The customer NEVER has to type their address again.
                     5. CLOSING & CLARITY:
                     - Be concise, direct, and guide the customer toward completing the purchase.
                     - When an order is placed, summarize the Order ID, final price, and status clearly.

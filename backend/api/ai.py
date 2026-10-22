@@ -17,7 +17,8 @@ def chat_with_ai(request:ChatRequest):
     response = chat(
         message=request.message,
         business_id=request.business_id,
-        customer_id=request.customer_id
+        customer_id=request.customer_id,
+        history=request.history
     )
     return ChatResponse(
         success=True,

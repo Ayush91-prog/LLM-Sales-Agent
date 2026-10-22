@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine
 from database.base import Base
 from api import ai
+from sqlalchemy import text
 
 import models
 
@@ -23,8 +24,12 @@ from api.auth_admin import router as admin_auth_router
 from api.auth_customer import router as customer_auth_router
 
 
-#Create tables
 Base.metadata.create_all(bind=engine)
+if engine.dialect.name == "postgresql":
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE customers ADD COLUMN IF NOT EXISTS address TEXT;"))
+        conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address TEXT;"))
+        conn.commit()
 print("tables known to SQLALchemy:",list(Base.metadata.tables.keys()))
 
 

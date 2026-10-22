@@ -21,6 +21,7 @@ def register_customer(data:CustomerRegister, db: Session  = Depends(get_db)):
         name=data.name,
         email=data.email,
         phone=data.phone,
+        address=data.address,
         hashed_password=hash_password(data.password),
     )
     db.add(new_customer)
@@ -49,5 +50,6 @@ def get_customer_profile(current_customer:Customer = Depends(get_current_custome
         "id":current_customer.id,
         "name":current_customer.name,
         "email":current_customer.email,
-        "phone":current_customer.phone
+        "phone":current_customer.phone,
+        "address":current_customer.address
     }

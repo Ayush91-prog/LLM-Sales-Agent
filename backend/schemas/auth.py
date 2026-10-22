@@ -26,6 +26,7 @@ class CustomerRegister(BaseModel):
     email:EmailStr
     password:str
     phone:Optional[str]=None
+    address: Optional[str]=None
 
 class CustomerLogin(BaseModel):
     email:EmailStr

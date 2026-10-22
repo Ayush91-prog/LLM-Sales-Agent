@@ -114,6 +114,7 @@ def order_tracking_tool(order_id: int):
         return {
             "order_id": order.id,
             "customer_name": order.customer.name if order.customer else "Unknown",
+            "shipping_address":order.shipping_address or (order.customer.address if order.customer else "Address on file"),
             "product_name": order.product.name if order.product else "Unknown",
             "total_amount": order.total_amount,
             "status": order.status,

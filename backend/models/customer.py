@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped,mapped_column
 from sqlalchemy import Integer, String, ForeignKey, DateTime
-from datetime import datetime
+from datetime import datetime, UTC
 from database.base import Base 
 
 class Customer(Base):
@@ -25,5 +25,18 @@ class Customer(Base):
         String,
         nullable=True
     )
-    hashed_password:Mapped[str | None] = mapped_column(String, nullable=True)
-    created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    address: Mapped[str | None] = mapped_column(
+        String,
+        nullable = True
+    )
+
+    hashed_password:Mapped[str | None] = mapped_column(
+        String, 
+        nullable=True
+        )
+    
+    created_at:Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC)
+        )

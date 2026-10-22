@@ -32,6 +32,11 @@ class Order(Base):
         String,
         default="pending"
     )
+    shipping_address: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True
+    )
+    
     customer = relationship("Customer")
     product = relationship("Product")
     
