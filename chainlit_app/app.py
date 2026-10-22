@@ -6,6 +6,14 @@ load_dotenv()
 
 os.environ.pop("DATABASE_URL", None)
 
+auth_secret = os.getenv("CHAINLIT_AUTH_SECRET") or os.getenv("JWT_SECRET_KEY")
+if not auth_secret:
+    raise RuntimeError(
+        "CHAILIT_AUTH_SECRET (or JWT_SECRET_KEY) environment variable is not configured."
+    )
+os.environ["CHAINLIT_AUTH_SECRET"] = auth_secret
+
+
 import chainlit as cl
 import httpx
 
