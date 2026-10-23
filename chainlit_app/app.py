@@ -1,89 +1,61 @@
 import os
 import time
+import urllib.parse
 from dotenv import load_dotenv
 
 load_dotenv()
 
 os.environ.pop("DATABASE_URL", None)
 
-auth_secret = os.getenv("CHAINLIT_AUTH_SECRET") or os.getenv("JWT_SECRET_KEY")
-if not auth_secret:
-    raise RuntimeError(
-        "CHAILIT_AUTH_SECRET (or JWT_SECRET_KEY) environment variable is not configured."
-    )
-os.environ["CHAINLIT_AUTH_SECRET"] = auth_secret
-
-
 import chainlit as cl
 import httpx
 
-FASTAPI_URL = os.getenv(
-    "BACKEND_URL",
-    os.getenv("LOCAL_BACKEND_URL", "http://127.0.0.1:8000/ai/chat")
-)
+raw_backend_url = os.getenv("BACKEND_URL") or os.getenv("LOCAL_BACKEND_URL") or "http://127.0.0.1:8000"
+clean_url = raw_backend_url.rstrip("/")
+if clean_url.endswith("/ai/chat"):
+    AUTH_BASE_URL = clean_url[:-len("/ai/chat")]
+    FASTAPI_URL = clean_url
+else:
+    AUTH_BASE_URL = clean_url
+    FASTAPI_URL = f"{clean_url}/ai/chat"
 
-AUTH_BASE_URL = FASTAPI_URL.replace("/ai/chat","")
-
+PORTAL_URL = os.getenv("FRONTEND_PORTAL_URL", "https://ai-sales-marketplace-portal.onrender.com/customer_login.html")
 SESSION_TIMEOUT_MINUTES = 120
-
-
-@cl.password_auth_callback
-async def auth_callback(username: str, password: str):
-    """
-    Authenticate against existing registered customers in Neon DB.
-    STRICT AUTHENTICATION: NO auto-registration.
-    Users must register via the Customer Portal first.
-    """
-    async with httpx.AsyncClient() as client:
-        try:
-            res = await client.post(
-                f"{AUTH_BASE_URL}/auth/customer/login",
-                json={"email":username.strip().lower(),"password":password},
-                timeout = 15.0
-            )
-            if res.status_code == 200:
-                data = res.json()
-                token = data.get("access_token")
-
-                me_res = await client.get(
-                    f"{AUTH_BASE_URL}/auth/customer/me",
-                    headers={"Authorization":f"Bearer {token}"},
-                    timeout=15.0
-                )
-
-                if me_res.status_code == 200:
-                    profile = me_res.json()
-                    return cl.User(
-                        identifier=profile["email"],
-                        metadata={
-                            "customer_id":profile["id"],
-                            "name":profile["name"],
-                            "email":profile["email"],
-                            "phone":profile.get("phone",""),
-                            "address":profile.get("address",""),
-                            "login_timestamp":time.time(),
-                            "token":token
-                        }
-                    )
-                return None
-        except Exception as e:
-            print(f"Auth error: {e}")
-            return None
-
  
 @cl.on_chat_start
 async def start():
     cl.user_session.set("history", [])
 
-    user: cl.User = cl.user_session.get("user")
-    if user and user.metadata:
-        customer_name = user.metadata.get("name","Valued Customer")
-        customer_id = user.metadata.get("customer_id")
-        delivery_address = user.metadata.get("address") or "Not registered"
+    environ = getattr(cl.context.session, "environ", {}) or {}
+    raw_query = environ.get("QUERY_STRING" ,"")
+    referer = environ.get("HTTP_REFERER","")
 
+    query_data = {}
+    if raw_query:
+        query_data = urllib.parse.parse_qs(raw_query)
+    elif "?" in referer:
+        query_data = urllib.parse.parse_qs(referer.split("?",1)[1])
+
+    customer_id = None
+    customer_name = None
+    delivery_address = None
+
+    if "customer_id" in query_data:
+        try:
+            customer_id = int(query_data["customer_id"][0])
+        except (ValueError, IndexError):
+            customer_id = None
+
+    if "name" in query_data:
+        customer_name = query_data["name"][0]
+    if "address" in query_data:
+        delivery_address = query_data["address"][0]
+
+    if customer_id and customer_name:
         cl.user_session.set("customer_id",customer_id)
         cl.user_session.set("customer_name",customer_name)
-        cl.user_session.set("login_timestamp", user.metadata.get("login_timestamp",time.time()))
+        cl.user_session.set("customer_address",delivery_address)
+        cl.user_session.set("login_timestamp",time.time())
 
         welcome_msg = (
             f"Hello **{customer_name}**! Welcome back to the **AI Marketplace**!\n\n"
@@ -116,7 +88,7 @@ async def main(message: cl.Message):
 
             await cl.Message(
                 content = " ** Your login session has expired .** \n\n"
-                "For your security, please refresh and log in again to continue placing orders."
+                f"For your security, please [**click here to log in again**]({PORTAL_URL}) to place orders."
             ).send()
             return
         

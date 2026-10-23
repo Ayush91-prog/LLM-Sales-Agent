@@ -32,10 +32,15 @@ document.addEventListener("DOMContentLoaded",()=>{
             const data = await res.json();
             if(res.ok){
                 localStorage.setItem('customer_token',data.access_token);
-                alert("Logged in Successfully! Redirecting to AI Chat...");
-                window.location.href = 'https://llm-sales-agent.onrender.com'
+                const meRes = await fetch (`${API_BASE_URL}/auth/customer/me`, {
+                    headers: {'Authorization':`Bearer ${data.access_token}`}
+                });
+                const profile = await meRes.json();
+                
+                const chainlitUrl = `https://llm-sales-agent.onrender.com/?customer_id=${profile.id}&name=${encodeURIComponent(profile.name)}&address=${encodeURIComponent(profile.address || '')}`;
+                window.location.href = chainlitUrl;
             }else{
-                alert(data.detail || "Login Failed");
+                alert(data.detail || "Login Failed: Invalid Email or Password");
             }
         }catch(err){
             alert('Could not connect to backend server');
