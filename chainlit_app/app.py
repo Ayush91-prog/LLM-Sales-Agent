@@ -1,5 +1,6 @@
 import os
 import time
+import asyncio
 import urllib.parse
 from dotenv import load_dotenv
 
@@ -26,30 +27,67 @@ SESSION_TIMEOUT_MINUTES = 120
 async def start():
     cl.user_session.set("history", [])
 
-    environ = getattr(cl.context.session, "environ", {}) or {}
-    raw_query = environ.get("QUERY_STRING" ,"")
-    referer = environ.get("HTTP_REFERER","")
-
-    query_data = {}
-    if raw_query:
-        query_data = urllib.parse.parse_qs(raw_query)
-    elif "?" in referer:
-        query_data = urllib.parse.parse_qs(referer.split("?",1)[1])
-
     customer_id = None
     customer_name = None
     delivery_address = None
+    
+    try:
+        copilot_fn = getattr(cl, "CopilotFunction", None)
+        if copilot_fn:
+            res = await asyncio.wait_for(
+                copilot_fn(name="get_customer_params", args={}).acall(),
+                timeout=1.5
+            )
+            if isinstance(res, dict):
+                cid_val = res.get("customer_id")
+                if cid_val:
+                    try:
+                        customer_id = int(cid_val)
+                    except (ValueError, TypeError):
+                        customer_id = None
+                customer_name = res.get("name")
+                delivery_address = res.get("address")
+    except Exception:
+        pass
 
-    if "customer_id" in query_data:
-        try:
-            customer_id = int(query_data["customer_id"][0])
-        except (ValueError, IndexError):
-            customer_id = None
 
-    if "name" in query_data:
-        customer_name = query_data["name"][0]
-    if "address" in query_data:
-        delivery_address = query_data["address"][0]
+    if not customer_id or not customer_name:
+        environ = getattr(cl.context.session, "environ", {}) or {}
+        candidates = []
+
+        raw_query = environ.get("QUERY_STRING", "")
+        if raw_query and "customer_id" in raw_query:
+            candidates.append(raw_query)
+
+        session_referer = cl.user_session.get("http_referer") or ""
+        if session_referer and "customer_id" in session_referer:
+            candidates.append(session_referer)
+
+        environ_referer = environ.get("HTTP_REFERER", "")
+        if environ_referer and "customer_id" in environ_referer:
+            candidates.append(environ_referer)
+
+        scope = environ.get("asgi.scope", {})
+        for header_name, header_val in scope.get("headers", []):
+            if header_name.lower() == b"referer":
+                ref_str = header_val.decode("utf-8", errors="ignore")
+                if "customer_id" in ref_str:
+                    candidates.append(ref_str)
+
+        for candidate in candidates:
+            query_str = candidate.split("?", 1)[1] if "?" in candidate else candidate
+            parsed = urllib.parse.parse_qs(query_str)
+            if "customer_id" in parsed and not customer_id:
+                try:
+                    customer_id = int(parsed["customer_id"][0])
+                except (ValueError, IndexError):
+                    pass
+            if "name" in parsed and not customer_name:
+                customer_name = parsed["name"][0]
+            if "address" in parsed and not delivery_address:
+                delivery_address = parsed["address"][0]
+            if customer_id and customer_name:
+                break
 
     if customer_id and customer_name:
         cl.user_session.set("customer_id",customer_id)

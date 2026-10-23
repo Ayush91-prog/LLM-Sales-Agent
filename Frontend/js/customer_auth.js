@@ -64,8 +64,12 @@ document.addEventListener("DOMContentLoaded",()=>{
             const data = await res.json();
             if(res.ok){
                 localStorage.setItem('customer_token',data.access_token);
-                alert("Account created successfully! Please sign in to lauch your AI shopping chat.");
-                loginTab.click();
+                const meRes = await fetch(`${API_BASE_URL}/auth/customer/me`, {
+                    headers: {'Authorization':`Bearer ${data.access_token}`}
+                });
+                const profile = await meRes.json();
+                const chainlitUrl = `https://llm-sales-agent.onrender.com/?customer_id=${profile.id}&name=${encodeURIComponent(profile.name)}&address=${encodeURIComponent(profile.address || '')}`;
+                window.location.href = chainlitUrl;
             }else{
                 alert(data.detail || 'Registration failed');
             }

@@ -22,7 +22,6 @@ test.db
 *.sqlite3
 *.db
 
-.chainlit/
 .files/
 
 .vscode/
