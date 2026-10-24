@@ -1,4 +1,4 @@
-# 🛒 Multi-Tenant AI Sales Agent & Marketplace Concierge
+# Multi-Tenant AI Sales Agent & Marketplace Concierge
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -11,7 +11,7 @@ An autonomous, full-stack, multi-tenant AI Sales Marketplace designed to replica
 
 ---
 
-## 🌐 Live Production Links
+##  Live Production Links
 
 | Service | Component | Live URL |
 | :--- | :--- | :--- |
@@ -21,7 +21,7 @@ An autonomous, full-stack, multi-tenant AI Sales Marketplace designed to replica
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```mermaid
 graph TD
@@ -41,16 +41,9 @@ graph TD
         D -->|Live Analytics| G[Merchant Admin Dashboard]
     end
 ```
-
-### Key Architectural Highlights:
-1. **Multi-Tenant Intent Resolution**: Customers converse naturally (e.g. *"I need 1kg Toor Dal"*). The AI searches across all merchant catalogs, isolates the matching seller, and enforces seller-specific pricing.
-2. **Margin-Aware Policy Negotiation**: Business owners configure maximum discount limits (e.g., 5%) and shipping policies. The LLM acts as an autonomous sales negotiator, calculating and granting discounts without ever breaching merchant margins.
-3. **Session & Address Binding**: When a customer signs up or logs in, their profile and full delivery address are bridged seamlessly into Chainlit via a custom client-side event listener (`custom.js`) and `CopilotFunction`, eliminating redundant checkout questions.
-4. **Real-Time Merchant Fulfillment**: Completed orders instantly update the merchant's cloud PostgreSQL database and reflect on their management dashboard with live revenue metrics.
-
 ---
 
-## 💻 Tech Stack
+##  Tech Stack
 
 - **Backend**: Python 3.12, FastAPI, SQLAlchemy, Uvicorn, Pydantic, HTTPX
 - **AI & Reasoning**: Google Gemini 2.5 Flash, Strands Agents, Custom Function Tool-Calling
@@ -61,7 +54,7 @@ graph TD
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 LLM-SALES-AGENT/
@@ -96,7 +89,7 @@ LLM-SALES-AGENT/
 
 ---
 
-## 🚀 Local Development Setup
+##  Local Development Setup
 
 ### 1. Clone the Repository
 ```bash
@@ -141,7 +134,7 @@ Open `Frontend/index.html` in your browser (or use VS Code Live Server).
 
 ---
 
-## 🧪 Running Automated Tests
+##  Running Automated Tests
 
 Run the backend test suite with SQLite isolation:
 ```bash
@@ -151,7 +144,7 @@ pytest -v
 
 ---
 
-## 👨‍💻 Author
+## 👨 Author
 
 **Ayush Sandal**
 * GitHub: [@Ayush91-prog](https://github.com/Ayush91-prog)
