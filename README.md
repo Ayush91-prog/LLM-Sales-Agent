@@ -158,6 +158,3 @@ pytest -v
 * Project: [LLM-Sales-Agent](https://github.com/Ayush91-prog/LLM-Sales-Agent)
 
 ---
-
-## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
