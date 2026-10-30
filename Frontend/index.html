@@ -4,59 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Sales Agent</title>
+    <meta name="description" content="An autonomous, multi-tenant AI shopping assistant and merchant operations platform.">
     <link rel="stylesheet" href="styles/landing.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "AI Sales Agent Marketplace",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All modern web browsers",
+      "description": "An autonomous, multi-tenant AI shopping assistant and merchant operations platform.",
+      "url": "https://ai-sales-marketplace-portal.onrender.com",
+      "author": {
+        "@type": "Person",
+        "name": "Ayush Sandal"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
 </head>
 <body>
     <div class="landing-container">
-        <h1>AI Sales Agent</h1>
-        <p class="subtitle">
-            An AI-powered sales assistant built with 
-            <strong>FastAPI</strong>
-            <strong>Gemini</strong>
-            <strong>Strands</strong>
-            <strong>Neon PostgreSQL</strong>
-            <strong>Render</strong>
-            and
-            <strong>Chainlit</strong>
-        </p>
-        <div class="cards">
-            <div class="card">
-                <h2>Customer</h2>
-                <p>
-                    Talk with the AI shopping assistant,
-                    discover products,
-                    receive recommendations
-                    and place orders.
-                </p>
-                <a 
-                  href="customer_login.html"
-                  target="_blank"
-                  >
-                    Launch AI Chat
-                </a>
-            </div>
-            <div class="card">
-                <h2>Business Owner</h2>
-                <p>
-                    Manage products,
-                    customers,
-                    policies
-                    and orders.
-                </p>
-                <a 
-                  href="admin_login.html">
-                     Open Dashboard
-                </a>
-            </div>
-        </div>
-        <div class="github">
-            <a 
-              href="https://github.com/Ayush91-prog/LLM-Sales-Agent"
-              target="_blank"
-              >
-                View Source Code
-            </a>
-        </div>
+        <header class="header-section">
+            <h1>AI Sales Agent</h1>
+            <p class="subtitle">An autonomous, multi-tenant AI shopping assistant and merchant operations platform.</p>
+        </header>
+
+        <main class="main-layout">
+            <section class="portals-col" aria-label="Portal Entry Points">
+                <article class="portal-card">
+                    <h2>Customer Portal</h2>
+                    <p>
+                        Converse with the conversational AI concierge. Discover products across verified sellers, 
+                        negotiate fair policy-capped discounts, and execute instant checkouts to your saved delivery address.
+                    </p>
+                    <a href="customer_login.html" class="portal-btn">Launch AI Chat</a>
+                </article>
+
+                <article class="portal-card">
+                    <h2>Business Owner Portal</h2>
+                    <p>
+                        Manage your multi-tenant digital storefront. Configure product catalogs, set custom discount & shipping 
+                        policies, monitor incoming orders in real time, and analyze revenue performance.
+                    </p>
+                    <a href="admin_login.html" class="portal-btn">Open Dashboard</a>
+                </article>
+            </section>
+
+            <section class="content-col" aria-label="Platform Details">
+                <div class="info-block">
+                    <h2>How the Autonomous Sales Agent Works</h2>
+                    
+                    <div class="feature-item">
+                        <h3>1. Intent & Multi-Store Resolution</h3>
+                        <p>
+                            Customers ask for products naturally (e.g. <em>"I need a Kg Toy Dog"</em> or <em>"Find me a Samsung S24"</em>). 
+                            The AI agent searches the unified multi-tenant database, identifies which merchant stocks the item, and attributes pricing without requiring the shopper to manually pick a store.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <h3>2. Policy-Bound Negotiation</h3>
+                        <p>
+                            Merchants define strict margin rules (e.g. max 10% discount, minimum order value, free shipping thresholds). 
+                            When customers negotiate, the AI uses autonomous tool-calling to calculate and grant discounts strictly within the seller's approved limits.
+                        </p>
+                    </div>
+
+                    <div class="feature-item">
+                        <h3>3. Zero-Friction Fulfilment</h3>
+                        <p>
+                            Customer delivery addresses are bound upon sign-in. Orders are finalized with one confirmation, creating real-time 
+                            ACID-compliant transactions in Neon PostgreSQL and instantly reflect on the merchant's fulfillment dashboard.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <h2>Platform Overview</h2>
+                    <p class="overview-text">
+                        It is designed for online retail customers seeking a personal conversational shopping assistant, 
+                        and independent business owners who want an automated 24/7 sales representative that negotiates and closes sales without human staff.
+                    </p>
+                    <p class="overview-text">
+                        The core software is open-source and free to explore for research, portfolio demonstration, and merchant prototyping. 
+                        Live deployments run on cost-effective serverless architecture.
+                    </p>
+                </div>
+            </section>
+        </main>
     </div>
 </body>
 </html>
